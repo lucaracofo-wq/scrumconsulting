@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ScrumFlow | Gestión de Sprints</title>
+<style>
+:root{--blue:#315efb;--ink:#17243a;--muted:#6d7b91;--line:#e3e9f2;--bg:#f3f6fb}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:Segoe UI,Arial,sans-serif;color:var(--ink)}button,input,textarea,select{font:inherit}button{cursor:pointer;border:0;border-radius:10px;padding:10px 14px;font-weight:650}.primary{background:var(--blue);color:white}.ghost{background:#eef2f8;color:#40506a}.danger{background:#fff0f0;color:#b82d37}
+.login-wrap{min-height:100vh;display:grid;place-items:center;padding:20px;background:linear-gradient(135deg,#14294b,#315efb)}.login{width:min(420px,100%);background:white;padding:34px;border-radius:22px;box-shadow:0 25px 70px #07142c55}.logo-image{display:block;object-fit:contain;background:white;border-radius:12px}.login .logo-image{width:144px;height:144px;margin:0 auto 18px}.login h1{margin:0 0 8px}.sub,.hint{color:var(--muted);line-height:1.5}.field{display:flex;flex-direction:column;gap:7px;margin:13px 0}.field label{font-size:13px;font-weight:700;color:#45536a}.field input,.field textarea,.field select{border:1px solid var(--line);border-radius:10px;padding:11px;background:white;width:100%;outline:none}.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--blue)}.error{color:#bd3030;font-size:13px;min-height:18px}
+#app{display:none}.topbar{background:white;border-bottom:1px solid var(--line);padding:14px 4vw;display:flex;align-items:center;justify-content:space-between;gap:12px;position:sticky;top:0;z-index:4}.brand{display:flex;align-items:center;gap:10px;font-weight:800}.brand .logo-image{width:52px;height:52px;flex:none}.top-actions{display:flex;gap:8px;flex-wrap:wrap}main,.dashboard{max-width:1500px;margin:26px auto;padding:0 22px}.heading{display:flex;justify-content:space-between;align-items:flex-end;gap:15px;margin-bottom:20px}.heading h1{margin:0 0 5px;font-size:27px}.heading p{margin:0;color:var(--muted)}.metrics{display:grid;grid-template-columns:repeat(4,minmax(120px,1fr));gap:13px;margin-bottom:20px}.metric,.panel{background:white;border:1px solid var(--line);border-radius:14px;padding:16px;box-shadow:0 8px 24px #23395b0b}.metric span{display:block;color:var(--muted);font-size:11px;font-weight:700;text-transform:uppercase}.metric strong{display:block;font-size:25px;margin-top:6px}.board{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px;align-items:start}.column{background:#e9eef6;border:1px solid #dfe6f0;border-radius:15px;padding:13px;min-height:390px}.col-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;font-weight:800}.dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:#8292ad;margin-right:7px}.doing .dot{background:#e29a2e}.done .dot{background:#20a273}.count,.tag{background:#f0f3f8;color:#52627b;border-radius:20px;padding:4px 8px;font-size:11px}.cards{min-height:310px}.card{background:white;border:1px solid var(--line);border-radius:12px;padding:13px;margin-bottom:10px;box-shadow:0 4px 12px #1d35570b;cursor:grab}.card h3{font-size:15px;margin:0 0 7px}.desc{font-size:12px;color:var(--muted);margin-bottom:10px}.tags{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}.tag.points{background:#eaf0ff;color:var(--blue);font-weight:800}.progress-line{height:6px;background:#edf0f5;border-radius:8px;overflow:hidden;margin:6px 0}.progress-line i{display:block;height:100%;background:var(--blue)}.progress-label,.card-foot{display:flex;justify-content:space-between;font-size:11px;color:var(--muted)}.card-foot{align-items:center;margin-top:10px}.mini{padding:5px 8px;font-size:11px;background:#f1f4f9;color:#44536b;margin-left:4px}.empty{color:#8794a8;text-align:center;padding:30px 8px;font-size:13px;border:1px dashed #c9d3e2;border-radius:11px}.hint{font-size:12px}.dashboard{display:none}.dash-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.panel h3{margin:0 0 14px}.barrow{margin:12px 0;font-size:13px}.barhead{display:flex;justify-content:space-between;gap:8px}.chart{min-height:190px}.modal-back{display:none;position:fixed;inset:0;background:#101d35a6;z-index:8;place-items:center;padding:18px}.modal{background:white;border-radius:17px;width:min(620px,100%);max-height:92vh;overflow:auto;padding:22px}.modal-head,.modal-actions{display:flex;justify-content:space-between;align-items:center;gap:8px}.modal-head h2{margin:0}.modal-actions{justify-content:flex-end;margin-top:15px}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:900px){.board{grid-template-columns:1fr}.dash-grid{grid-template-columns:1fr}.metrics{grid-template-columns:repeat(2,1fr)}}@media(max-width:520px){.topbar{align-items:flex-start;flex-direction:column}.top-actions{width:100%;gap:6px}.top-actions button{flex:1 1 calc(50% - 6px);padding:9px 10px}.heading{align-items:flex-start;flex-direction:column}.heading>button{width:100%}.board{grid-template-columns:repeat(3,minmax(260px,1fr));overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x proximity;padding-bottom:8px}.column{scroll-snap-align:start}.grid2{grid-template-columns:1fr}.modal-actions{flex-direction:column-reverse;align-items:stretch}.modal-actions button{width:100%}main,.dashboard{padding:0 13px}}@media(max-width:360px){main,.dashboard{padding:0 10px}.metrics{gap:9px}.metric{padding:13px}.metric strong{font-size:22px}}
+:root{--blue:#b4232f;--ink:#292929;--muted:#737373;--line:#e4e4e7;--bg:#f4f4f5}
+.login-wrap{background:linear-gradient(135deg,#292929,#b4232f)}
+.ghost{background:#ededed;color:#404040}
+.danger{background:#fce8e8;color:#a61b29}
+.metric,.panel{box-shadow:0 8px 24px #2929290b}
+.column{background:#ededed;border-color:#d9d9dc}
+.dot{background:#858585}
+.doing .dot{background:#b4232f}
+.done .dot{background:#525252}
+.count,.tag{background:#e8e8e8;color:#525252}
+.tag.points{background:#fce8e8;color:#a61b29}
+.progress-line{background:#e5e5e5}
+.card{box-shadow:0 4px 12px #2929290b}
+.mini{background:#ededed;color:#404040}
+.empty{color:#737373;border-color:#c9c9cc}
+.modal-back{background:#292929a6}
+#trendChart div div{background:#b4232f!important}
+#cycleChart .progress-line i{background:#737373!important}
+#burndownChart svg path:nth-of-type(2){stroke:#b4232f!important}
+</style>
+</head>
+<body>
+<section class="login-wrap" id="loginScreen"><form class="login" id="loginForm">
+<img class="logo-image" src="logo-scrum.png" alt="Scrum Consulting SAS"><h1>Bienvenido a ScrumFlow</h1><p class="sub">Accede a tu espacio de gestión de tareas y sprints.</p>
+<div class="field"><label>Usuario</label><input id="username" type="email" autocomplete="username" required placeholder="luis.acostaf@hotmail.com"></div>
+<div class="field"><label>Contraseña</label><input id="password" type="password" autocomplete="current-password" required placeholder="12345"></div>
+<button class="primary" style="width:100%" type="submit">Ingresar</button><div class="error" id="loginError"></div>
+<p class="hint">Acceso de demostración. Las credenciales están configuradas en este archivo HTML.</p>
+</form></section>
+<div id="app">
+<header class="topbar"><div class="brand"><img class="logo-image" src="logo-scrum.png" alt="Scrum Consulting SAS">ScrumFlow <span style="font-weight:400;color:#8794a8">/ Gestión de Sprints</span></div>
+<div class="top-actions"><button class="ghost" id="boardBtn">Tablero</button><button class="ghost" id="dashboardBtn">Dashboard</button><button class="ghost" id="exportBtn">Exportar JSON</button><button class="ghost" id="logoutBtn">Cerrar sesión</button></div></header>
+<main id="boardView">
+<div class="heading"><div><h1>Tablero de trabajo</h1><p>Organiza, ejecuta y controla el avance del equipo.</p></div><button class="primary" id="addBtn">＋ Nueva tarea</button></div>
+<section class="metrics"><div class="metric"><span>Tareas registradas</span><strong id="mTotal">0</strong></div><div class="metric"><span>Puntos planeados</span><strong id="mPlanned">0</strong></div><div class="metric"><span>Puntos en ejecución</span><strong id="mDoing">0</strong></div><div class="metric"><span>Tareas finalizadas</span><strong id="mDone">0</strong></div></section>
+<section class="board" aria-label="Tablero de tareas; desliza horizontalmente para ver todas las columnas" tabindex="0">
+<div class="column"><div class="col-head"><span><i class="dot"></i>Tareas iniciales</span><span class="count" id="countTodo">0</span></div><div class="cards" id="todo" data-status="todo"></div></div>
+<div class="column doing"><div class="col-head"><span><i class="dot"></i>En ejecución</span><span class="count" id="countDoing">0</span></div><div class="cards" id="doing" data-status="doing"></div></div>
+<div class="column done"><div class="col-head"><span><i class="dot"></i>Finalizadas</span><span class="count" id="countDone">0</span></div><div class="cards" id="done" data-status="done"></div></div>
+</section><p class="hint">Arrastra las tarjetas entre columnas. Los datos se guardan en este navegador; utiliza Exportar JSON para crear una copia de seguridad.</p>
+</main>
+<section class="dashboard" id="dashboardView">
+<div class="heading"><div><h1>Dashboard de cumplimiento</h1><p>Indicadores, tendencias y desempeño del equipo.</p></div><button class="primary" id="refreshDashboard">Actualizar análisis</button></div>
+<section class="metrics"><div class="metric"><span>Cumplimiento global</span><strong id="dCompliance">0%</strong></div><div class="metric"><span>Tareas completadas</span><strong id="dCompleted">0 / 0</strong></div><div class="metric"><span>Tiempo promedio de cierre</span><strong id="dAverage">—</strong></div><div class="metric"><span>Puntos completados</span><strong id="dPoints">0</strong></div></section>
+<div class="dash-grid">
+<div class="panel"><h3>Tendencia de finalización</h3><div id="trendChart" class="chart"></div><p class="hint">Tareas finalizadas por mes, según la fecha de cierre registrada.</p></div>
+<div class="panel"><h3>Desempeño por colaborador</h3><div id="peopleChart"></div><p class="hint">Compara tareas completadas y tiempo promedio. La rapidez se calcula con fechas de inicio y cierre.</p></div>
+<div class="panel"><h3>Cumplimiento por ciclo / Sprint</h3><div id="cycleChart"></div><p class="hint">Porcentaje de tareas finalizadas respecto al total de tareas de cada Sprint.</p></div>
+<div class="panel"><h3>Resumen del proyecto</h3><div id="projectSummary"></div></div>
+<div class="panel" style="grid-column:1/-1"><h3>Burndown Chart · Trabajo pendiente del Sprint</h3>
+<div class="grid2"><div class="field"><label>Sprint</label><select id="burndownCycle"></select></div><div class="field"><label>Fecha de inicio del Sprint</label><input type="date" id="burndownStart"></div><div class="field"><label>Fecha de finalización del Sprint</label><input type="date" id="burndownEnd"></div></div>
+<div id="burndownStats" class="tags"></div><div id="burndownChart" class="chart"></div><p class="hint">La línea ideal distribuye los puntos uniformemente. La línea real muestra los puntos pendientes a partir de las fechas de cierre registradas. Es una reconstrucción estimada basada en los datos disponibles.</p>
+</div></div></section>
+</div>
+<div class="modal-back" id="modalBack"><form class="modal" id="taskForm">
+<div class="modal-head"><h2 id="modalTitle">Nueva tarea</h2><button class="ghost" type="button" id="closeModal">✕</button></div><input type="hidden" id="taskId">
+<div class="field"><label>Nombre de la tarea *</label><input id="title" required maxlength="100"></div>
+<div class="field"><label>Descripción</label><textarea id="description" rows="2"></textarea></div>
+<div class="grid2">
+<div class="field"><label>Responsable</label><input id="owner" placeholder="Nombre del colaborador"></div>
+<div class="field"><label>Ciclo / Sprint</label><input id="cycle" placeholder="Ej. Sprint 1"></div>
+<div class="field"><label>Puntos de historia</label><input id="points" type="number" min="0" step="1" value="1"></div>
+<div class="field"><label>Tiempo estimado (horas)</label><input id="hours" type="number" min="0" step=".5" value="1"></div>
+<div class="field"><label>Progreso (%)</label><input id="progress" type="number" min="0" max="100" value="0"></div>
+<div class="field"><label>Estado</label><select id="status"><option value="todo">Tareas iniciales</option><option value="doing">En ejecución</option><option value="done">Finalizadas</option></select></div>
+<div class="field"><label>Fecha de inicio</label><input id="start" type="date"></div>
+<div class="field"><label>Fecha de finalización / compromiso</label><input id="end" type="date"></div>
+</div><div class="modal-actions"><button class="ghost" type="button" id="cancelBtn">Cancelar</button><button class="primary" type="submit">Guardar tarea</button></div>
+</form></div>
+<script>
+const USER='luis.acostaf@hotmail.com',PASS='12345',KEY='scrumflow_tasks_v1';
+let tasks=JSON.parse(localStorage.getItem(KEY)||'[]');
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const dateFmt=d=>d?new Date(d+'T00:00:00').toLocaleDateString('es-CO',{day:'2-digit',month:'short',year:'numeric'}):'Sin fecha';
+function persist(){localStorage.setItem(KEY,JSON.stringify(tasks));render()}
+$('loginForm').onsubmit=e=>{e.preventDefault();if($('username').value.trim().toLowerCase()===USER&&$('password').value===PASS){$('loginScreen').style.display='none';$('app').style.display='block';render()}else $('loginError').textContent='Usuario o contraseña incorrectos.'};
+$('logoutBtn').onclick=()=>{$('app').style.display='none';$('loginScreen').style.display='grid';$('password').value=''};
+function render(){
+ ['todo','doing','done'].forEach(status=>{
+ const list=tasks.filter(t=>t.status===status);
+ $(status).innerHTML=list.length?list.map(t=>`<article class="card" draggable="true" data-id="${t.id}">
+ <h3>${esc(t.title)}</h3>${t.description?`<div class="desc">${esc(t.description)}</div>`:''}
+ <div class="tags"><span class="tag points">${Number(t.points)||0} pts</span><span class="tag">${esc(t.cycle||'Sin ciclo')}</span><span class="tag">${Number(t.hours)||0} h</span><span class="tag">${dateFmt(t.start)}</span></div>
+ <div class="progress-label"><span>Progreso</span><b>${Math.min(100,Number(t.progress)||0)}%</b></div><div class="progress-line"><i style="width:${Math.min(100,Number(t.progress)||0)}%"></i></div>
+ <div class="card-foot"><span>👤 ${esc(t.owner||'Sin responsable')}<br>Fin: ${dateFmt(t.end)}</span><span><button class="mini" data-edit="${t.id}">Editar</button><button class="mini" data-delete="${t.id}">✕</button></span></div></article>`).join(''):'<div class="empty">Suelta aquí las tareas<br>o crea una nueva.</div>';
+ $('count'+status[0].toUpperCase()+status.slice(1)).textContent=list.length;
+ });
+ $('mTotal').textContent=tasks.length;$('mPlanned').textContent=tasks.reduce((s,t)=>s+(+t.points||0),0);$('mDoing').textContent=tasks.filter(t=>t.status==='doing').reduce((s,t)=>s+(+t.points||0),0);$('mDone').textContent=tasks.filter(t=>t.status==='done').length;
+}
+function openModal(t){$('taskForm').reset();$('taskId').value=t?.id||'';$('modalTitle').textContent=t?'Editar tarea':'Nueva tarea';['title','description','owner','cycle','points','hours','progress','start','end','status'].forEach(k=>{if(t&&t[k]!==undefined)$(k).value=t[k]});if(!t){$('points').value=1;$('hours').value=1;$('progress').value=0;$('status').value='todo'}$('modalBack').style.display='grid'}
+function closeModal(){$('modalBack').style.display='none'}
+$('addBtn').onclick=()=>openModal();$('closeModal').onclick=$('cancelBtn').onclick=closeModal;
+$('taskForm').onsubmit=e=>{e.preventDefault();const id=$('taskId').value||String(Date.now()),old=tasks.find(t=>t.id===id),status=$('status').value;if($('start').value&&$('end').value&&$('end').value<$('start').value){alert('La fecha final no puede ser anterior a la fecha de inicio.');return}
+const t={id,title:$('title').value.trim(),description:$('description').value.trim(),owner:$('owner').value.trim(),cycle:$('cycle').value.trim()||'Sin ciclo asignado',points:$('points').value,hours:$('hours').value,progress:status==='done'?100:$('progress').value,start:$('start').value,end:$('end').value,status,createdAt:old?.createdAt||new Date().toISOString(),completedAt:status==='done'?(old?.completedAt||new Date().toISOString()):''};
+const i=tasks.findIndex(x=>x.id===id);if(i>=0)tasks[i]=t;else tasks.push(t);closeModal();persist()};
+document.addEventListener('click',e=>{let a=e.target.closest('[data-edit]'),b=e.target.closest('[data-delete]');if(a){let t=tasks.find(x=>x.id===a.dataset.edit);if(t)openModal(t)}if(b&&confirm('¿Eliminar esta tarea?')){tasks=tasks.filter(x=>x.id!==b.dataset.delete);persist()}});
+let dragged=null;document.addEventListener('dragstart',e=>{let c=e.target.closest('.card');if(c)dragged=c.dataset.id});document.querySelectorAll('.cards').forEach(col=>{col.ondragover=e=>e.preventDefault();col.ondrop=e=>{e.preventDefault();let t=tasks.find(x=>x.id===dragged);if(t){t.status=col.dataset.status;if(t.status==='done'){t.progress=100;t.completedAt=new Date().toISOString()}else t.completedAt='';persist()}dragged=null}});
+function days(a,b){if(!a||!b)return null;return Math.max(0,(new Date(b)-new Date(a))/86400000)}
+function renderDashboard(){
+let done=tasks.filter(t=>t.status==='done'),total=tasks.length,completedPoints=done.reduce((s,t)=>s+(+t.points||0),0),times=done.map(t=>days(t.start,(t.completedAt||t.end||'').slice(0,10))).filter(x=>x!==null);
+$('dCompliance').textContent=(total?Math.round(done.length/total*100):0)+'%';$('dCompleted').textContent=`${done.length} / ${total}`;$('dAverage').textContent=times.length?(times.reduce((a,b)=>a+b,0)/times.length).toFixed(1)+' días':'—';$('dPoints').textContent=completedPoints;
+let monthly={};done.forEach(t=>{let d=t.completedAt||t.end;if(d){let k=new Date(d).toLocaleDateString('es-CO',{month:'short',year:'2-digit'});monthly[k]=(monthly[k]||0)+1}});
+let entries=Object.entries(monthly);$('trendChart').innerHTML=entries.length?`<div style="height:180px;display:flex;align-items:end;gap:10px;border-bottom:1px solid #ddd;padding:10px">${entries.map(([k,v])=>`<div style="flex:1;text-align:center"><b>${v}</b><div style="height:${Math.max(8,v/Math.max(...entries.map(x=>x[1]))*125)}px;background:#315efb;border-radius:6px 6px 0 0;margin:5px auto;width:min(44px,80%)"></div><small>${esc(k)}</small></div>`).join('')}</div>`:'<div class="empty">Aún no hay tareas finalizadas con fecha de cierre.</div>';
+let people={};tasks.forEach(t=>{let n=t.owner||'Sin responsable';people[n]??={n:0,t:[]};if(t.status==='done'){people[n].n++;let d=days(t.start,(t.completedAt||t.end||'').slice(0,10));if(d!==null)people[n].t.push(d)}});
+let rank=Object.entries(people).sort((a,b)=>b[1].n-a[1].n),fast=Object.entries(people).filter(x=>x[1].t.length).sort((a,b)=>a[1].t.reduce((s,v)=>s+v,0)/a[1].t.length-b[1].t.reduce((s,v)=>s+v,0)/b[1].t.length)[0];
+$('peopleChart').innerHTML=rank.length?rank.map(([n,v])=>`<div class="barrow"><div class="barhead"><b>${esc(n)}</b><span>${v.n} completadas · ${v.t.length?(v.t.reduce((a,b)=>a+b,0)/v.t.length).toFixed(1)+' días':'sin tiempos'}</span></div><div class="progress-line"><i style="width:${done.length?v.n/done.length*100:0}%"></i></div></div>`).join('')+(fast?`<span class="tag">⚡ Más rápido por promedio: ${esc(fast[0])}</span>`:'<p class="hint">Añade fechas de inicio y cierre para medir rapidez.</p>'):'<div class="empty">Añade responsables para ver el análisis.</div>';
+let cycles={};tasks.forEach(t=>{let c=t.cycle||'Sin ciclo asignado';cycles[c]??={all:0,done:0};cycles[c].all++;if(t.status==='done')cycles[c].done++});
+$('cycleChart').innerHTML=Object.entries(cycles).length?Object.entries(cycles).map(([c,v])=>{let pct=Math.round(v.done/v.all*100);return `<div class="barrow"><div class="barhead"><b>${esc(c)}</b><span>${v.done}/${v.all} · ${pct}%</span></div><div class="progress-line"><i style="width:${pct}%;background:#16845b"></i></div></div>`}).join(''):'<div class="empty">Asigna un Sprint a las tareas.</div>';
+$('projectSummary').innerHTML=`<p><b>${total}</b> tareas en total.</p><p>${tasks.filter(t=>t.status==='todo').length} iniciales · ${tasks.filter(t=>t.status==='doing').length} en ejecución · ${done.length} finalizadas.</p><p><b>${tasks.reduce((s,t)=>s+(+t.points||0),0)}</b> puntos planeados; <b>${completedPoints}</b> completados.</p>`;
+renderBurndown();
+}
+function renderBurndown(){
+let cycles=[...new Set(tasks.map(t=>t.cycle||'Sin ciclo asignado'))],sel=$('burndownCycle'),prev=sel.value;sel.innerHTML=cycles.map(c=>`<option>${esc(c)}</option>`).join('');if(cycles.includes(prev))sel.value=prev;
+if(!cycles.length){$('burndownStats').innerHTML='';$('burndownChart').innerHTML='<div class="empty">Agrega tareas para analizar un Sprint.</div>';return}
+let list=tasks.filter(t=>(t.cycle||'Sin ciclo asignado')===sel.value),starts=list.map(t=>t.start).filter(Boolean).sort(),ends=list.map(t=>t.end).filter(Boolean).sort();
+if(!$('burndownStart').value)$('burndownStart').value=starts[0]||new Date().toISOString().slice(0,10);if(!$('burndownEnd').value)$('burndownEnd').value=ends.at(-1)||$('burndownStart').value;
+let s=$('burndownStart').value,e=$('burndownEnd').value;if(!s||!e||e<s){$('burndownChart').innerHTML='<div class="empty">Selecciona un rango de fechas válido.</div>';return}
+let start=new Date(s+'T00:00:00'),n=Math.round((new Date(e+'T00:00:00')-start)/86400000)+1,total=list.reduce((a,t)=>a+(+t.points||0),0),finished=list.filter(t=>t.status==='done').reduce((a,t)=>a+(+t.points||0),0);
+$('burndownStats').innerHTML=`<span class="tag points">${total} puntos iniciales</span><span class="tag">${total-finished} pendientes</span><span class="tag">${finished} completados</span><span class="tag">${n} días</span>`;
+let rows=[];for(let i=0;i<n;i++){let d=new Date(start);d.setDate(d.getDate()+i);let key=d.toISOString().slice(0,10),closed=0;list.forEach(t=>{if(t.status==='done'){let c=(t.completedAt||t.end||'').slice(0,10);if(c&&c<=key)closed+=(+t.points||0)}});rows.push({label:d.toLocaleDateString('es-CO',{day:'2-digit',month:'short'}),ideal:total*(1-i/Math.max(1,n-1)),actual:Math.max(0,total-closed)})}
+let w=760,h=210,p=35,max=Math.max(1,total),x=i=>p+i/Math.max(1,n-1)*(w-2*p),y=v=>h-p-v/max*(h-2*p),path=k=>rows.map((r,i)=>(i?'L':'M')+x(i)+','+y(r[k])).join(' ');
+$('burndownChart').innerHTML=`<svg viewBox="0 0 ${w} ${h}" style="width:100%;max-height:270px">${[0,max/2,max].map(v=>`<line x1="${p}" y1="${y(v)}" x2="${w-p}" y2="${y(v)}" stroke="#e5eaf2"/><text x="${p-8}" y="${y(v)+4}" text-anchor="end" font-size="10" fill="#718096">${Math.round(v)}</text>`).join('')}<path d="${path('ideal')}" fill="none" stroke="#9aa7bb" stroke-width="2" stroke-dasharray="6 5"/><path d="${path('actual')}" fill="none" stroke="#315efb" stroke-width="3"/>${rows.map((r,i)=>i===0||i===n-1||i%Math.ceil(n/6)===0?`<text x="${x(i)}" y="${h-8}" text-anchor="middle" font-size="10" fill="#718096">${r.label}</text>`:'').join('')}</svg><p class="hint" style="text-align:center">━ Línea real &nbsp;&nbsp; ┄ Línea ideal</p>`;
+}
+$('dashboardBtn').onclick=()=>{$('boardView').style.display='none';$('dashboardView').style.display='block';renderDashboard()};
+$('boardBtn').onclick=()=>{$('dashboardView').style.display='none';$('boardView').style.display='block';render()};
+$('refreshDashboard').onclick=renderDashboard;$('burndownCycle').onchange=()=>{$('burndownStart').value='';$('burndownEnd').value='';renderBurndown()};$('burndownStart').onchange=renderBurndown;$('burndownEnd').onchange=renderBurndown;
+$('exportBtn').onclick=()=>{let blob=new Blob([JSON.stringify(tasks,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='scrumflow-tareas.json';a.click();URL.revokeObjectURL(a.href)};
+</script>
+</body>
+</html>
